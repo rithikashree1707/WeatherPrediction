@@ -1,9 +1,5 @@
 # Weather Prediction Using Machine Learning
 
-## Research Topic: Machine Learning and Numerical Prediction Models for High-Impact Weather Prediction
-
-This project is aimed at building a machine learning-based prediction model for high-impact weather events, focusing specifically on extreme precipitation and wind events. The dataset used contains meteorological measurements from different weather stations (e.g., Basel, Tours, DE BILT), and the goal is to predict these extreme events based on various weather parameters.
-
 ### Project Structure
 
 1. **Data Loading and Preprocessing**
