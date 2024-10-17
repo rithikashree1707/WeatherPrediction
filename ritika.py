@@ -126,3 +126,96 @@ yWind = WeatherData[TargetWind]
 X_trainPrecipitation, X_testPrecipitation, y_trainPrecipitation, y_testPrecipitation = train_test_split(X, yPrecipitation, test_size=0.3, random_state=42)
 X_trainWind, X_testWind, y_trainWind, y_testWind = train_test_split(X, yWind, test_size=0.3, random_state=42)
 
+# Implementing Random Forest Model for high-impact precipitation prediction
+RandomForestPrecipitation = RandomForestClassifier(random_state=42)
+RandomForestPrecipitation.fit(X_trainPrecipitation, y_trainPrecipitation)
+
+# Making predictions for the Random Forest Precipitation Model using testing data
+RandomForestPrecipitationPrediction = RandomForestPrecipitation.predict(X_testPrecipitation)
+
+# Implementing Random Forest Model for high-impact wind prediction
+RandomForestModelWind = RandomForestClassifier(random_state=42)
+RandomForestModelWind.fit(X_trainWind, y_trainWind)
+
+# Making predictions for the Random Forest Wind Model using testing data
+RandomForestModelWindPredictions = RandomForestModelWind.predict(X_testWind)
+
+# Calculating the performance of both models
+RandomForestPrecipitationReport = classification_report(y_testPrecipitation, RandomForestPrecipitationPrediction)
+RandomForestModelWindReport = classification_report(y_testWind, RandomForestModelWindPredictions)
+
+# Printing the performance of Random Forest Model for Precipitation
+print("Random Forest Model for High-Impact Precipitation Prediction Performance:\n", RandomForestPrecipitationReport)
+
+# Printing the performance of Random Forest Model for Wind
+print("Random Forest Model for High-Impact Wind Prediction Performance:\n", RandomForestModelWindReport)
+
+# Implementing Logistic Regression Model for high-impact precipitation prediction
+LogisticRegressionPrecipitation = LogisticRegression(random_state=42, max_iter=1000)
+LogisticRegressionPrecipitation.fit(X_trainPrecipitation, y_trainPrecipitation)
+
+# Making predictions for the Logistic Regression Precipitation Model using testing data
+LogisticRegressionPrecipitationPrediction = LogisticRegressionPrecipitation.predict(X_testPrecipitation)
+
+# Calculating the performance of the model
+LogisticRegressionPrecipitationReport = classification_report(y_testPrecipitation, LogisticRegressionPrecipitationPrediction)
+
+# Printing the performance of Logistic Regression Model for Precipitation
+print("Logistic Regression Model for High-Impact Precipitation Prediction Performance:\n", LogisticRegressionPrecipitationReport)
+
+# Implementing Decision Tree Model for high-impact wind prediction
+DecisionTreeModelWind = DecisionTreeClassifier(random_state=42)
+DecisionTreeModelWind.fit(X_trainWind, y_trainWind)
+
+# Making predictions for the Decision Tree Wind Model using testing data
+DecisionTreeModelWindPredictions = DecisionTreeModelWind.predict(X_testWind)
+
+# Calculating the performance of the model
+DecisionTreeModelWindReport = classification_report(y_testWind, DecisionTreeModelWindPredictions)
+
+# Printing the performance of Decision Tree Model for Wind
+print("Decision Tree Model for High-Impact Wind Prediction Performance:\n", DecisionTreeModelWindReport)
+
+# Defining a function to plot the model comparison
+def ModelComparisonPlottingFunction(models, X_test, y_test, ModelNames):
+  metrics = {
+      'Accuracy': accuracy_score,
+      'Precision': precision_score,
+      'Recall': recall_score,
+      'F1-Score': f1_score,
+  }
+
+  results = {}
+  for model, name in zip(models, ModelNames):
+    y_pred = model.predict(X_test)
+    results[name] = {}
+    for MetricName, MetricFunction in metrics.items():
+      try:
+        results[name][MetricName] = MetricFunction(y_test, y_pred)
+      except ValueError:
+        results[name][MetricName] = np.nan  # Handling cases where a metric can't be computed
+
+  DataframeResults = pd.DataFrame(results).transpose()
+
+  # Plotting the comparison
+  plt.figure(figsize=(12, 6))
+  for MetricName in metrics:
+    plt.plot(DataframeResults.index, DataframeResults[MetricName], label=MetricName, marker='o')
+  plt.title('Model Comparison')
+  plt.xlabel('Model')
+  plt.ylabel('Score')
+  plt.xticks(rotation=45, ha='right')
+  plt.legend()
+  plt.grid(True)
+  plt.tight_layout()
+  plt.show()
+
+# Applying the function on the model
+models = [RandomForestPrecipitation, LogisticRegressionPrecipitation, RandomForestModelWind, DecisionTreeModelWind]
+X_tests = [X_testPrecipitation, X_testPrecipitation, X_testWind, X_testWind]
+y_tests = [y_testPrecipitation, y_testPrecipitation, y_testWind, y_testWind]
+ModelNames = ['Random Forest (Precipitation)', 'Logistic Regression (Precipitation)', 'Random Forest (Wind)', 'Decision Tree (Wind)']
+
+# Calling the function for each target variable
+for X_test, y_test, model_name in zip(X_tests, y_tests, ModelNames):
+  ModelComparisonPlottingFunction([models[i] for i in range(len(models))], X_test, y_test, ModelNames)
